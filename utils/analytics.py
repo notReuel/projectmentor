@@ -40,7 +40,7 @@ def display_aggregated_results(aggregated):
 
 def calculate_progress(previous, current):
     """
-    Calculate the percentage change in progress.
+    Calculate the percentage improvement in reading and math levels.
 
     Args:
         previous (dict): Dictionary containing previous scores.
@@ -59,11 +59,11 @@ def calculate_progress(previous, current):
         else:
             progress[f"{key}_improvement"] = ((curr - prev) / prev) * 100
 
-    return progress
+    print("DEBUG - progress calculation:", progress)  # Keep this for debugging
+    return progress  # ✅ Now it returns progress
 
 
 if __name__ == "__main__":
     agg = aggregate_results()
     if agg:
         display_aggregated_results(agg)
-

@@ -1,69 +1,51 @@
+# utils/learner_profiles.py
 import json
 import os
 
-def load_progress(filename="progress_data.json"):
-    """Load assessment results from a JSON file."""
-    if os.path.exists(filename):
-        with open(filename, "r") as f:
+PROFILE_FILENAME = "learner_profiles.json"
+
+def load_profiles():
+    """Load learner profiles from a JSON file."""
+    if os.path.exists(PROFILE_FILENAME):
+        with open(PROFILE_FILENAME, "r") as file:
             try:
-                return json.load(f)
+                return json.load(file)
             except json.JSONDecodeError:
-                return []
-    else:
-        return []
+                return {}
+    return {}
 
-def aggregate_results():
-    """Aggregate progress data to compute average reading and math levels."""
-    data = load_progress()
-    if not data:
-        print("No progress data available.")
-        return {}
-    
-    total_reading = sum(item.get("reading_level", 0) for item in data)
-    total_math = sum(item.get("math_level", 0) for item in data)
-    count = len(data)
-    
-    aggregated = {
-        "total_assessments": count,
-        "avg_reading_level": total_reading / count,
-        "avg_math_level": total_math / count
-    }
-    return aggregated
+def save_profiles(profiles):
+    """Save learner profiles to a JSON file."""
+    with open(PROFILE_FILENAME, "w") as file:
+        json.dump(profiles, file, indent=4)
 
-def display_aggregated_results(aggregated):
-    """Display aggregated performance data."""
-    print("\n=== Aggregated Performance Analytics ===")
-    print(f"Total Assessments: {aggregated.get('total_assessments', 0)}")
-    print(f"Average Reading Level: {aggregated.get('avg_reading_level', 0):.2f}")
-    print(f"Average Math Level: {aggregated.get('avg_math_level', 0):.2f}")
-    print("==========================================\n")
-
-def calculate_progress(previous, current):
+def add_or_update_learner(learner_id, new_data):
     """
-    Calculate the percentage improvement in reading and math levels.
-
+    Add a new learner or update an existing learner's profile.
+    
     Args:
-        previous (dict): Dictionary containing previous scores.
-        current (dict): Dictionary containing current scores.
-
-    Returns:
-        dict: Progress in percentage for each skill.
+        learner_id (str): The unique ID of the learner.
+        new_data (dict): A dictionary containing assessment results and additional data.
     """
-    progress = {}
-    for key in ["reading_level", "math_level"]:
-        prev = previous.get(key, 0)
-        curr = current.get(key, 0)
-        
-        if prev == 0:  # Avoid division by zero
-            progress[f"{key}_improvement"] = 100 if curr > 0 else 0
-        else:
-            progress[f"{key}_improvement"] = ((curr - prev) / prev) * 100
+    profiles = load_profiles()
+    profiles[learner_id] = new_data
+    save_profiles(profiles)
+    print(f"Learner profile for '{learner_id}' has been updated.")
 
-    print("DEBUG - progress calculation:", progress)  # Keep this for debugging
-    return progress  # ✅ Now it returns progress
-
+def get_learner(learner_id):
+    """
+    Retrieve a learner's profile by their ID.
+    
+    Args:
+        learner_id (str): The unique ID of the learner.
+    
+    Returns:
+        dict or None: The learner profile if found, otherwise None.
+    """
+    profiles = load_profiles()
+    return profiles.get(learner_id, None)
 
 if __name__ == "__main__":
-    agg = aggregate_results()
-    if agg:
-        display_aggregated_results(agg)
+    # For testing purposes
+    test_id = "learner123"
+    print("Learner profile for", test_id, ":", get_learner(test_id))
