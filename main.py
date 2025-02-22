@@ -1,71 +1,68 @@
 import time
-from assessments.adaptive_reading_test import get_reading_level, test_comprehension
-from assessments.writing_assesment import assess_writing
+from assessments.adaptive_reading_assessment import get_reading_level, test_comprehension
+from assessments.writing_assessment import assess_writing
 from assessments.math_assessment import get_math_level
-from utils.progress_tracker import save_progress, display_progress  # Assuming progress_tracker.py is in utils/
+from utils.progress_tracker import save_progress, display_progress
 from utils.gamification import award_badges, display_badges
-from utils.lesson_planner import generate_lesson_plan, display_lesson_plan
-from utils.learner_profiles import add_or_update_learner, get_learner
-from utils.analytics import aggregate_results, display_aggregated_results
+from utils.lesson_planner import generate_lesson_plan  # We'll return the plan, not display it
+from utils.learner_profiles import add_or_update_learner
+from utils.analytics import aggregate_results
 
-
-def main():
-    print("Welcome to the AI Tutor MVP!")
-    print("=================================")
-    time.sleep(1)
-
-    # Get learner ID
-    learner_id = input("Enter your learner ID (or email): ").strip()
+def start_assessment(learner_id):
+    """
+    Run all assessments for a given learner and return a dictionary of results.
     
-
-    # Reading Assessments
-    print("\nStarting Reading Assessment...")
+    This function has been refactored to remove command-line inputs/outputs
+    and is intended for use with Flask routes.
+    """
+    # Instead of printing and sleeping, we directly run the assessments.
+    # Reading Assessment
     reading_level = get_reading_level()
-    print(f"Your estimated reading level is: {reading_level}")
+    # Note: test_comprehension() may still produce dialogs if it uses Tkinter,
+    # so you might need to adapt it further for web usage.
     test_comprehension()
-
-    input("\nPress Enter to continue to the Writing Assessment...")
     
     # Writing Assessment
-    print("\nStarting Writing Assessment...")
     assess_writing()
     
-    input("\nPress Enter to continue to the Math Assessment...")
-    
     # Math Assessment
-    print("\nStarting Math Assessment...")
     math_level = get_math_level()
-    print(f"Your estimated math level is: {math_level}")
     
-    print("\nAll assessments complete!")
-    print("Thank you for using the AI Tutor MVP!")
-    
-        # Compile results into a dictionary
+    # Compile results into a dictionary
     results = {
         "reading_level": reading_level,
         "math_level": math_level,
         "writing_assessment_completed": True
     }
     
-    # Save progress and display summary
+    # Save progress and (if needed) display summary (for now, we'll save but not display via CLI)
     save_progress(results)
-    display_progress(results)
+    # Optionally, you could call display_progress(results) in a terminal context,
+    # but for web we want to return data.
     
-    # Gamification: Award and display badges based on progress
+    # Gamification: Award badges based on progress
     badges = award_badges(results)
-    display_badges(badges)
     
     # Update learner profile
     add_or_update_learner(learner_id, results)
     
-    # Generate and display a personalized lesson plan based on results
-    plan = generate_lesson_plan(results)
-    display_lesson_plan(plan)
+    # Generate a personalized lesson plan based on results
+    lesson_plan = generate_lesson_plan(results)
+    
+    # Gather aggregated analytics data
+    aggregated = aggregate_results()
+    
+    # Return all collected data so that Flask can render it in a template
+    return {
+        "results": results,
+        "badges": badges,
+        "lesson_plan": lesson_plan,
+        "aggregated": aggregated
+    }
 
-    # Ask if user wants to see aggregated analytics across all assessments
-    if input("Would you like to view aggregated performance analytics? (y/n): ").strip().lower() == 'y':
-        aggregated = aggregate_results()
-        display_aggregated_results(aggregated)
-
+# For debugging or command-line testing, you can include a main block:
 if __name__ == '__main__':
-    main()
+    learner_id = input("Enter your learner ID (or email): ").strip()
+    assessment_data = start_assessment(learner_id)
+    print("Assessment Data:")
+    print(assessment_data)

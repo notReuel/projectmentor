@@ -1,22 +1,15 @@
 import random
 from difflib import SequenceMatcher
-import tkinter as tk
-from tkinter import simpledialog, messagebox
 
 def similarity_score(expected, actual):
     """Returns a similarity ratio between expected and actual text."""
     return SequenceMatcher(None, expected.lower(), actual.lower()).ratio()
 
-def get_user_input(prompt):
-    """Uses a Tkinter dialog to get user input."""
-    root = tk.Tk()
-    root.withdraw()  # Hide the root window
-    answer = simpledialog.askstring("Input", prompt)
-    root.destroy()
-    return answer
-
 def basic_writing_test():
-    """Basic writing tasks with GUI dialogs for input and output."""
+    """Basic writing tasks: letter formation and spelling. Some tasks are auto-evaluated."""
+    print("=== Basic Writing Test ===")
+    # Each prompt is a tuple: (instruction, expected_answer)
+    # If expected_answer is None, the task is open-ended.
     prompts = [
         ("Write the alphabet from A to Z.", None),
         ("Copy this sentence: The cat is on the mat.", "The cat is on the mat."),
@@ -25,19 +18,24 @@ def basic_writing_test():
         ("Copy this sentence: I love to learn new things.", "I love to learn new things.")
     ]
     prompt, expected = random.choice(prompts)
-    messagebox.showinfo("Basic Writing Test", f"Task: {prompt}")
-    
+    print(f"Task: {prompt}")
     if expected is not None:
-        user_response = get_user_input("Type your answer:")
-        score = similarity_score(expected, user_response) if user_response else 0
-        result_msg = f"Similarity score: {score:.2f}\n"
-        result_msg += "Great job on copying accurately!" if score >= 0.9 else "There seem to be some errors; please review the sentence."
-        messagebox.showinfo("Result", result_msg)
+        # For copy tasks, get the user's response and compare it
+        user_response = input("Type your answer: ")
+        score = similarity_score(expected, user_response)
+        print(f"Similarity score: {score:.2f}")
+        if score >= 0.9:
+            print("Great job on copying accurately!")
+        else:
+            print("There seem to be some errors; please review the sentence.")
     else:
-        messagebox.showinfo("Task Completed", "Task completed!")
+        input("Press Enter when you have completed the task.")
+        print("Task completed!")
+    print("Great job on the basic writing task!\n")
     
 def sentence_writing_test():
-    """Sentence construction tasks with GUI dialogs."""
+    """Sentence construction tasks."""
+    print("=== Sentence Construction Test ===")
     prompts = [
         "Complete this sentence: The dog ran _____.",
         "Arrange these words into a sentence: school - to - go - I - love",
@@ -46,12 +44,13 @@ def sentence_writing_test():
         "Write a question you would ask a teacher."
     ]
     prompt = random.choice(prompts)
-    messagebox.showinfo("Sentence Writing Test", f"Task: {prompt}")
-    get_user_input("When you've completed the task, press OK.")
-    messagebox.showinfo("Task Completed", "Great job on the sentence construction task!")
+    print(f"Task: {prompt}")
+    input("Press Enter when you have completed the task.")
+    print("Great job on the sentence construction task!\n")
     
 def creative_writing_test():
-    """Creative writing tasks with GUI dialogs."""
+    """Creative writing tasks."""
+    print("=== Creative Writing Test ===")
     prompts = [
         "Write a short story about a lost balloon.",
         "Describe your favorite food in five sentences.",
@@ -60,16 +59,17 @@ def creative_writing_test():
         "Describe a time when you felt really proud of yourself."
     ]
     prompt = random.choice(prompts)
-    messagebox.showinfo("Creative Writing Test", f"Task: {prompt}")
-    get_user_input("When you've completed the task, press OK.")
-    messagebox.showinfo("Task Completed", "Great job on the creative writing task!")
+    print(f"Task: {prompt}")
+    input("Press Enter when you have completed the task.")
+    print("Great job on the creative writing task!\n")
     
 def assess_writing():
-    """Conduct the complete writing assessment using GUI elements."""
+    """Conduct the complete writing assessment."""
+    print("Let's test your writing skills!")
     basic_writing_test()
     sentence_writing_test()
     creative_writing_test()
-    messagebox.showinfo("Writing Assessment", "Writing assessment complete!")
-    
+    print("Writing assessment complete!")
+
 if __name__ == '__main__':
     assess_writing()
