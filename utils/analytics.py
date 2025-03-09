@@ -1,3 +1,10 @@
+"""
+analytics.py
+
+Provides functions to load progress data from a JSON file, aggregate analytics,
+display analytics, and calculate progress improvements.
+"""
+
 import json
 import os
 
@@ -9,8 +16,7 @@ def load_progress(filename="progress_data.json"):
                 return json.load(f)
             except json.JSONDecodeError:
                 return []
-    else:
-        return []
+    return []
 
 def aggregate_results():
     """Aggregate progress data to compute average reading and math levels."""
@@ -53,15 +59,11 @@ def calculate_progress(previous, current):
     for key in ["reading_level", "math_level"]:
         prev = previous.get(key, 0)
         curr = current.get(key, 0)
-        
         if prev == 0:  # Avoid division by zero
             progress[f"{key}_improvement"] = 100 if curr > 0 else 0
         else:
             progress[f"{key}_improvement"] = ((curr - prev) / prev) * 100
-
-    print("DEBUG - progress calculation:", progress)  # Keep this for debugging
-    return progress  # ✅ Now it returns progress
-
+    return progress
 
 if __name__ == "__main__":
     agg = aggregate_results()

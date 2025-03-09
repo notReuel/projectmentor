@@ -1,29 +1,35 @@
-# utils/gamification.py
+"""
+gamification.py
+
+Provides functions for awarding badges based on assessment results.
+"""
 
 def award_badges(results):
     """
     Award badges based on the assessment results.
-    Returns a list of badges earned.
+    
+    Args:
+        results (dict): Assessment results containing keys like 'reading_level',
+                        'math_level', and 'writing_assessment_completed'.
+                        
+    Returns:
+        list: A list of badges awarded.
     """
     badges = []
-    
-    # Award a badge for strong reading skills
     if results.get("reading_level", 0) >= 2:
         badges.append("Reading Prodigy")
-    
-    # Award a badge for strong math skills
     if results.get("math_level", 0) >= 2:
         badges.append("Math Whiz")
-    
-    # Award a badge for completing the writing assessment
     if results.get("writing_assessment_completed", False):
         badges.append("Writing Star")
-    
     return badges
 
 def display_badges(badges):
     """
-    Display the awarded badges.
+    Display awarded badges (for CLI or debugging purposes).
+    
+    Args:
+        badges (list): List of badge names.
     """
     if badges:
         print("\nCongratulations! You've earned the following badges:")
